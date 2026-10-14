@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Little Cloud Shop - ศูนย์รวมบริการ FiveM และสกินอาวุธ</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Supabase JS Client & Config -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=11.0"></script>
+
+  <!-- Custom Design System matching Screenshots -->
+  <link rel="stylesheet" href="css/style.css?v=9.0">
+
+  <!-- Embedded High-Priority Action Buttons Styling (Matches Website Candy Pill Theme) -->
+  <style id="admin-action-buttons-css">
+    .admin-table-actions {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      flex-wrap: nowrap !important;
+      vertical-align: middle !important;
+    }
+
+    .admin-table button,
+    .admin-table-actions button,
+    .btn-action-edit,
+    .btn-action-delete,
+    .btn-action-role,
+    .btn-action-balance,
+    .btn-card-edit,
+    .btn-card-delete {
+      font-family: 'Prompt', 'Kanit', sans-serif !important;
+      font-size: 0.8rem !important;
+      font-weight: 600 !important;
+      line-height: 1.4 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      padding: 6px 15px !important;
+      border-radius: 9999px !important;
+      cursor: pointer !important;
+      white-space: nowrap !important;
+      outline: none !important;
+      user-select: none !important;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+      text-decoration: none !important;
+    }
+
+    .admin-table button i,
+    .admin-table-actions button i {
+      font-size: 0.84rem !important;
+      transition: transform 0.2s ease !important;
+    }
+
+    .admin-table button:hover i,
+    .admin-table-actions button:hover i {
+      transform: scale(1.12) !important;
+    }
+
+    .admin-table button:active,
+    .admin-table-actions button:active {
+      transform: translateY(0) scale(0.96) !important;
+    }
+
+    /* 1. การจัดการ: ปุ่มแก้ไข (Edit) - Little Cloud Candy Pink Pill */
+    .btn-action-edit,
+    .btn-card-edit {
+      background: rgba(228, 37, 117, 0.14) !important;
+      border: 1px solid rgba(244, 114, 182, 0.42) !important;
+      color: #f472b6 !important;
+    }
+
+    .btn-action-edit:hover,
+    .btn-card-edit:hover {
+      background: linear-gradient(135deg, #e42575 0%, #c01859 100%) !important;
+      border-color: #e42575 !important;
+      color: #ffffff !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 16px rgba(228, 37, 117, 0.5), 0 0 10px rgba(244, 114, 182, 0.3) !important;
+    }
+
+    /* 1. การจัดการ: ปุ่มลบ (Delete) - Obsidian Crimson Danger Pill */
+    .btn-action-delete,
+    .btn-card-delete {
+      background: rgba(239, 68, 68, 0.12) !important;
+      border: 1px solid rgba(239, 68, 68, 0.38) !important;
+      color: #fca5a5 !important;
+    }
+
+    .btn-action-delete:hover,
+    .btn-card-delete:hover {
+      background: linear-gradient(135deg, #ef4444 0%, #be123c 100%) !important;
+      border-color: #ef4444 !important;
+      color: #ffffff !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.5), 0 0 12px rgba(244, 63, 94, 0.3) !important;
+    }
+
+    /* 2. การกระทำ: ปุ่มสลับ Role - Royal Purple / Amethyst Admin Pill */
+    .btn-action-role {
+      background: rgba(168, 85, 247, 0.14) !important;
+      border: 1px solid rgba(217, 70, 239, 0.42) !important;
+      color: #f0abfc !important;
+    }
+
+    .btn-action-role:hover {
+      background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%) !important;
+      border-color: #d946ef !important;
+      color: #ffffff !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 16px rgba(217, 70, 239, 0.45), 0 0 12px rgba(168, 85, 247, 0.3) !important;
+    }
+
+    .btn-action-role.is-admin {
+      background: rgba(245, 158, 11, 0.14) !important;
+      border: 1px solid rgba(245, 158, 11, 0.42) !important;
+      color: #fde047 !important;
+    }
+
+    .btn-action-role.is-admin:hover {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+      border-color: #f59e0b !important;
+      color: #ffffff !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.45) !important;
+    }
+
+    /* 2. การกระทำ: ปุ่มปรับเงิน - Cyber Emerald / Supabase Wallet Pill */
+    .btn-action-balance {
+      background: rgba(16, 185, 129, 0.14) !important;
+      border: 1px solid rgba(52, 211, 153, 0.42) !important;
+      color: #34d399 !important;
+    }
+
+    .btn-action-balance:hover {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      border-color: #10b981 !important;
+      color: #ffffff !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5), 0 0 12px rgba(52, 211, 153, 0.3) !important;
+    }
+
+    /* User Role Badges */
+    .user-role-badge {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      padding: 3px 12px !important;
+      border-radius: 9999px !important;
+      font-size: 0.72rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.6px !important;
+      text-transform: uppercase !important;
+    }
+
+    .user-role-badge.role-admin {
+      background: rgba(225, 29, 72, 0.16) !important;
+      border: 1px solid rgba(225, 29, 72, 0.5) !important;
+      color: #f472b6 !important;
+      box-shadow: 0 0 10px rgba(225, 29, 72, 0.25) !important;
+    }
+
+    .user-role-badge.role-member {
+      background: rgba(148, 163, 184, 0.12) !important;
+      border: 1px solid rgba(148, 163, 184, 0.3) !important;
+      color: #cbd5e1 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ========================================================================
+       1. TOP NOTICE / STATUS BAR
+       ======================================================================== -->
+  <div class="top-notice-bar">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span
+        style="background: #2b1322; color: #f472b6; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.72rem;">ANNOUNCEMENT</span>
+      <span id="site-announcement-text">⚡ ระบบส่งของอัตโนมัติ 24 ชม. | เติมเงินผ่าน PromptPay
+        เงินเข้ากระเป๋าทันที</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 0.75rem; color: #717388;"><i class="fas fa-signal"></i> 24H ONLINE</span>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       2. NAVBAR (Images 1, 3, 4, 5)
+       ======================================================================== -->
+  <nav class="navbar">
+    <div class="container nav-container">
+
+      <!-- Brand Logo -->
+      <a href="javascript:void(0)" onclick="window.navToTab('home')" class="brand-logo">
+        <div class="logo-badge">
+          <i class="fas fa-cloud"></i>
+        </div>
+        <div>
+          <span class="brand-title brand-shop-name">Little Cloud</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links (Pill Style) -->
+      <ul class="nav-links">
+        <li>
+          <button class="nav-item-btn active" id="nav-tab-home" onclick="window.navToTab('home')">
+            หน้าแรก
+          </button>
+        </li>
+        <li>
+          <button class="nav-item-btn" id="nav-tab-shop" onclick="window.navToTab('shop')">
+            ไอเทม
+          </button>
+        </li>
+        <li>
+          <button class="nav-item-btn" id="nav-tab-topup" onclick="window.navToTab('topup')">
+            เติมพอยท์
+          </button>
+        </li>
+        <li>
+          <button class="nav-item-btn" id="nav-tab-profile" onclick="window.navToTab('profile')">
+            โปรไฟล์
+          </button>
+        </li>
+      </ul>
+
+      <!-- Right Nav Controls (Cart, Balance, User Avatar) -->
+      <div class="nav-right-group">
+
+        <!-- Cart Button -->
+        <button class="btn-icon-circle" onclick="window.openCartDrawer()" title="ตะกร้าสินค้า">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="cart-count-badge" id="nav-cart-count">0</span>
+        </button>
+
+        <!-- Balance / User Pill -->
+        <div class="user-nav-pill" onclick="window.navToTab('profile')" title="คลิกเพื่อดูโปรไฟล์">
+          <div class="user-nav-balance">
+            <i class="fas fa-wallet" style="color: #f472b6; font-size: 0.9rem;"></i>
+            <span id="nav-user-balance-val">0 บาท</span>
+          </div>
+          <div class="user-nav-avatar" id="nav-user-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+        </div>
+
+        <!-- Admin Shortcut (If Admin) -->
+        <button class="btn-icon-circle" id="nav-admin-btn" style="display: none; border-color: #f59e0b; color: #fbbf24;"
+          onclick="window.adminManager.openAdminModal()" title="แผงควบคุมแอดมิน">
+          <i class="fas fa-crown"></i>
+        </button>
+
+        <!-- Auth Button (If Logged Out) -->
+        <button class="btn-pink" id="nav-auth-btn" style="padding: 7px 16px; font-size: 0.85rem;"
+          onclick="window.authManager.openAuthModal('login')">
+          เข้าสู่ระบบ
+        </button>
+
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- ========================================================================
+       PAGE 1: หน้าแรก (HOME VIEW - Images 1 & 2)
+       ======================================================================== -->
+  <main id="view-home" class="container page-view-section">
+
+    <!-- Hero Section (Two Columns) -->
+    <section class="hero-two-col">
+      <div>
+        <span class="hero-tag-pill" id="hero-tag-text">LITTLE CLOUD SHOP</span>
+        <h1 class="hero-headline" id="hero-headline-title">
+          LITTLE CLOUD SHOP<br>
+          <span>ปลอดภัย 100%</span>
+        </h1>
+        <p class="hero-subtext" id="hero-subtext-desc">
+          Little Cloud Shop คือ ศูนย์รวมบริการและขายสินค้าต่างๆ ภายในเกมส์รวบรวมไว้ในที่เดียว
+        </p>
+        <button class="btn-pink" style="padding: 14px 28px; font-size: 1.05rem;" onclick="window.navToTab('shop')">
+          <i class="fas fa-bag-shopping"></i> เข้าร้านค้า
+        </button>
+      </div>
+
+      <!-- Right Media Card Showcase -->
+      <div class="hero-showcase-box">
+        <div class="hero-media-card">
+          <img
+            src="https://media.discordapp.net/attachments/1210664779824238662/1555161673831026728/image.png?backend=b2&ex=6acf56ac&is=6ace052c&hm=9b73e9728826d911c44301e87492584f7bc386bfb70c12a9b0d500fa38820d92&=&format=webp&quality=lossless"
+            alt="Gummy / Jelly 3D" id="hero-media-image">
+        </div>
+        <div class="hero-feature-bar">
+          <div class="hero-feature-icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <div class="hero-feature-text">
+            <b>แอดมินตอบแชททุกวัน 10:00–02:00 น.</b>
+            <span>นัดรับสินค้าในเกมส์</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Products Showcase on Home Page -->
+    <section class="home-featured-section" style="margin: 40px 0;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <span class="hero-tag-pill" style="font-size: 0.75rem; margin-bottom: 6px;">FEATURED PRODUCTS</span>
+          <h2 style="font-size: 1.7rem; font-weight: 800; color: #fff; margin: 4px 0;">🔥 สินค้ายอดนิยมในร้าน</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">ไอเทม สกินอาวุธ และเงิน M พร้อมส่งมอบทันที 24 ชม.</p>
+        </div>
+        <button class="btn-pink" style="padding: 8px 18px; font-size: 0.85rem;" onclick="window.navToTab('shop')">
+          ดูสินค้าทั้งหมดในร้าน <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
+        </button>
+      </div>
+      <div class="shop-products-grid" id="home-featured-grid">
+        <!-- Rendered dynamically from Supabase database -->
+      </div>
+    </section>
+
+    <!-- Promo Top-Up Banner Card (Image 1 Bottom) -->
+    <section class="promo-topup-card">
+      <span class="promo-pill-label">เติมเงิน</span>
+      <h2 class="promo-card-title">เติมเงินเข้ากระเป๋า ใช้ซื้อได้ทุกอย่างในร้าน</h2>
+      <p class="promo-card-desc">
+        โอนผ่าน PromptPay ยอดเข้ากระเป๋าอัตโนมัติ ไม่ต้องส่งสลิปให้ใคร
+      </p>
+      <button class="btn-pink" onclick="window.navToTab('topup')">
+        <i class="fas fa-wallet"></i> เติมเงินเลย
+      </button>
+    </section>
+
+    <!-- Facebook Support Callout Bar -->
+    <section class="discord-help-bar">
+      <div class="discord-icon-box" style="background: #1877f2;">
+        <i class="fab fa-facebook-f"></i>
+      </div>
+      <div class="discord-help-text" style="flex: 1;">
+        <h4>มีปัญหาเรื่องเติมเงินหรือของไม่เข้า?</h4>
+        <p>ทีมงานตอบในเพจ Facebook ทุกวัน 10:00–02:00 น.</p>
+      </div>
+      <a href="https://www.facebook.com/profile.php?id=100068908068854" target="_blank" class="btn-outline-dark"
+        id="hero-facebook-link" style="display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fab fa-facebook" style="color: #1877f2; font-size: 1.05rem;"></i> ติดต่อเพจ Facebook
+      </a>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       PAGE 2: ไอเทม / ร้านค้า (SHOP VIEW - Image 3)
+       ======================================================================== -->
+  <main id="view-shop" class="container page-view-section" style="display: none;">
+
+    <div class="shop-header-wrap">
+      <div class="shop-tag">LITTLE CLOUD STORE</div>
+      <h2 class="shop-headline">ร้านค้า Little Cloud</h2>
+      <p class="shop-subtext">ของทุกชิ้นเข้าตัวละครทันทีหลังกดซื้อ</p>
+
+      <!-- Search & Sort Controls -->
+      <div class="shop-controls-row">
+        <div class="shop-search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="shop-search-input"
+            placeholder="ค้นหาชื่อของ เช่น กาชา, รถ, ชุด, เหรียญ, เงิน M, สกิน...">
+        </div>
+        <select class="shop-sort-select" id="shop-sort-select">
+          <option value="newest">✨ ใหม่ล่าสุด</option>
+          <option value="price-asc">ราคา: ต่ำไปสูง</option>
+          <option value="price-desc">ราคา: สูงไปต่ำ</option>
+        </select>
+      </div>
+
+      <!-- Category Filter Pills (Image 3) -->
+      <div class="category-pills-row">
+        <button class="cat-pill active" data-cat="all">ทั้งหมด</button>
+        <button class="cat-pill" data-cat="เงิน M">เงิน M</button>
+        <button class="cat-pill" data-cat="สกินอาวุธ">Skin Weapon</button>
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 20px;">
+        <span id="shop-item-count-text">พบ 8 รายการ</span> · แสดงราคาเป็นบาททั้งหมด
+      </div>
+    </div>
+
+    <!-- Products Grid (Image 3 Style) -->
+    <div class="shop-products-grid" id="jelly-products-grid">
+      <!-- Injected dynamically from Supabase Database -->
+    </div>
+
+  </main>
+
+  <!-- ========================================================================
+       PAGE 3: ร้านแลกพอยท์ (POINT EXCHANGE VIEW)
+       ======================================================================== -->
+  <main id="view-exchange" class="container page-view-section" style="display: none;">
+    <div class="shop-header-wrap">
+      <div class="shop-tag">POINT REDEEM</div>
+      <h2 class="shop-headline">ร้านแลกพอยท์</h2>
+      <p class="shop-subtext">นำพอยท์สะสมจากการเติมเงินมาแลกไอเทมสุดพิเศษ</p>
+
+      <div
+        style="background: #151620; border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: 50px 20px; text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 12px; color: #f472b6;">💎</div>
+        <h3 style="color: #fff; margin-bottom: 8px;">ร้านแลกพอยท์กำลังเปิดเร็วๆ นี้</h3>
+        <p style="color: var(--text-muted); max-width: 450px; margin: 0 auto 20px;">
+          คุณสามารถสะสมพอยท์ได้จากการเติมเงินทุกยอด เติม 1 บาท รับ 1 พอยท์
+        </p>
+        <button class="btn-pink" onclick="window.navToTab('topup')">
+          <i class="fas fa-wallet"></i> เติมเงินสะสมพอยท์
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       PAGE 4: เติมพอยท์ / เติมเงิน (TOP-UP VIEW - Image 4)
+       ======================================================================== -->
+  <main id="view-topup" class="container page-view-section" style="display: none;">
+    <div class="topup-view-container">
+
+      <div style="margin-bottom: 24px;">
+        <div class="shop-tag">TOP UP</div>
+        <h2 class="shop-headline" style="font-size: 2.2rem;">เติมเงินเข้ากระเป๋า</h2>
+        <p class="shop-subtext">โอนผ่าน PromptPay ยอดเข้าอัตโนมัติ ไม่ต้องส่งสลิปให้ใคร</p>
+      </div>
+
+      <!-- Card 1: Balance Summary -->
+      <div class="topup-box-card" style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div
+            style="width: 44px; height: 44px; border-radius: 12px; background: #1f212e; display: flex; align-items: center; justify-content: center; color: #f472b6; font-size: 1.2rem;">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.8rem; color: var(--text-dim);">ยอดเงินคงเหลือ</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: #fff;" id="topup-current-balance-text">0 บาท</div>
+          </div>
+        </div>
+        <button class="btn-icon-circle" onclick="window.refreshUserData()" title="รีเฟรช">
+          <i class="fas fa-rotate"></i>
+        </button>
+      </div>
+
+      <!-- Card 2: Top-Up Amount Card -->
+      <div class="topup-box-card">
+        <h4 class="topup-card-title">เลือกยอดที่จะเติม</h4>
+
+        <div class="topup-input-box">
+          <input type="number" id="topup-amount-input" placeholder="เช่น 100" value="100"
+            oninput="window.setTopupAmount(this.value, true)">
+          <span>บาท</span>
+        </div>
+
+        <!-- Quick Amount Pills -->
+        <div id="quick-amount-pills"
+          style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px;">
+          <button type="button" class="cat-pill" data-amount="50" style="text-align: center;"
+            onclick="window.setTopupAmount(50, false, this)">50 บาท</button>
+          <button type="button" class="cat-pill active" data-amount="100" style="text-align: center;"
+            onclick="window.setTopupAmount(100, false, this)">100 บาท</button>
+          <button type="button" class="cat-pill" data-amount="300" style="text-align: center;"
+            onclick="window.setTopupAmount(300, false, this)">300 บาท</button>
+          <button type="button" class="cat-pill" data-amount="500" style="text-align: center;"
+            onclick="window.setTopupAmount(500, false, this)">500 บาท</button>
+        </div>
+
+        <div style="font-size: 0.78rem; color: var(--text-dim); text-align: center; margin-bottom: 16px;">
+          เติมขั้นต่ำ 1 บาท
+        </div>
+
+        <button class="btn-pink" style="width: 100%; padding: 14px; font-size: 1rem;"
+          onclick="window.topupManager.generatePromptPayQR()">
+          <i class="fas fa-qrcode"></i> สร้าง QR พร้อมเพย์
+        </button>
+
+        <!-- QR Display Section (Shown after generating) -->
+        <div id="topup-qr-result-box"
+          style="display: none; margin-top: 20px; background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5); color: #1e293b;">
+
+          <!-- Official PromptPay Header Banner -->
+          <div style="background: #003b71; padding: 16px 20px; text-align: center; color: #ffffff;">
+            <div
+              style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 1.15rem; letter-spacing: 0.5px;">
+              <span
+                style="background: #ffffff; color: #003b71; padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 900;">THAI
+                QR</span>
+              <span>PROMPTPAY · พร้อมเพย์</span>
+            </div>
+            <div style="font-size: 0.78rem; opacity: 0.9; margin-top: 3px;">สแกนได้จริงทุกแอปธนาคารไทย (K PLUS, SCB
+              Easy, Krungthai NEXT ฯลฯ)</div>
+          </div>
+
+          <!-- Card Content Body -->
+          <div style="padding: 20px 24px; text-align: center;">
+
+            <!-- Live Expiry Countdown & Reference ID -->
+            <div
+              style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 0.8rem;">
+              <div
+                style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 4px 10px; border-radius: 20px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                <i class="fas fa-stopwatch fa-spin" style="--fa-animation-duration: 4s;"></i>
+                <span>หมดอายุใน: <b id="topup-countdown-timer">15:00</b></span>
+              </div>
+              <div style="color: #64748b; font-size: 0.75rem; font-family: monospace;" id="topup-charge-id-badge">
+                REF: PP-INIT
+              </div>
+            </div>
+
+            <!-- Receiver & Account Info -->
+            <div
+              style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; text-align: left;">
+              <div
+                style="display: flex; justify-content: space-between; font-size: 0.84rem; color: #64748b; margin-bottom: 4px;">
+                <span>ชื่อบัญชีผู้รับ:</span>
+                <b style="color: #0f172a; font-size: 0.9rem;" id="topup-qr-receiver-name">Little Cloud Shop Official</b>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; font-size: 0.84rem; color: #64748b; margin-bottom: 4px;">
+                <span>เบอร์พร้อมเพย์:</span>
+                <b style="color: #003b71; font-weight: 700; font-family: monospace; font-size: 0.92rem;"
+                  id="topup-qr-phone-number">081-599-3194</b>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b;">
+                <span>ประเภทการชำระ:</span>
+                <b style="color: #059669; font-weight: 600;">Thai QR Payment (EMVCo Standard)</b>
+              </div>
+            </div>
+
+            <!-- Scannable Dynamic QR Image Container -->
+            <div
+              style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; padding: 14px; display: inline-block; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 12px;">
+              <img id="topup-generated-qr" src="" alt="PromptPay QR Code"
+                style="width: 230px; height: 230px; display: block; margin: 0 auto; object-fit: contain;">
+            </div>
+
+            <!-- Exact Amount Display -->
+            <div style="margin-bottom: 14px;">
+              <div style="font-size: 0.78rem; color: #64748b; font-weight: 600; text-transform: uppercase;">
+                ยอดเงินที่ต้องชำระ (บาท)</div>
+              <div style="font-weight: 800; font-size: 1.8rem; color: #e11d48; font-family: 'Outfit', sans-serif;"
+                id="topup-qr-amount-val">฿ 100.00</div>
+            </div>
+
+            <!-- Instructions Notice Banner -->
+            <div
+              style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; text-align: left; font-size: 0.82rem; color: #1e40af; line-height: 1.5;">
+              <div style="font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                <i class="fas fa-shield-check" style="color: #2563eb;"></i>
+                <span>ขั้นตอนการเติมเงิน (ระบบตรวจสอบสลิปอัตโนมัติ):</span>
+              </div>
+              <ol style="margin: 0; padding-left: 20px; color: #334155; font-size: 0.8rem;">
+                <li>เปิดแอปธนาคาร สแกน QR Code ด้านบนเพื่อโอนเงิน</li>
+                <li>บันทึกรูปสลิปจากแอปธนาคาร</li>
+                <li>กดปุ่ม <b>"แนบรูปสลิปโอนเงิน"</b> ด้านล่าง แล้วกดยืนยันเพื่อรับเครดิตทันที</li>
+              </ol>
+            </div>
+
+            <!-- Dual-Mode Slip Upload Section (Mobile QR or PC Upload) -->
+            <div
+              style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 16px; text-align: left;">
+
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                <div
+                  style="font-size: 0.88rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                  <i class="fas fa-file-invoice-dollar" style="color: #e11d48; font-size: 1.1rem;"></i>
+                  <span>แนบรูปสลิปหลักฐานการโอน <span style="color: #ef4444; font-weight: 800;">*จำเป็น</span></span>
+                </div>
+                <span id="topup-slip-badge"
+                  style="background: #e2e8f0; color: #475569; font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; font-weight: 600;">ยังไม่ได้แนบ</span>
+              </div>
+
+              <!-- Upload Mode Switch Tabs -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                <button type="button" id="tab-slip-qr" class="cat-pill active"
+                  style="font-size: 0.8rem; padding: 8px 10px; text-align: center; background: #e11d48; color: #fff; border: 1px solid #e11d48; border-radius: 10px; cursor: pointer; font-weight: 700;"
+                  onclick="window.topupManager.switchSlipUploadMode('qr')">
+                  <i class="fas fa-qrcode"></i> 1. สแกน QR ผ่านมือถือ
+                </button>
+                <button type="button" id="tab-slip-pc" class="cat-pill"
+                  style="font-size: 0.8rem; padding: 8px 10px; text-align: center; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer; font-weight: 600;"
+                  onclick="window.topupManager.switchSlipUploadMode('pc')">
+                  <i class="fas fa-desktop"></i> 2. เลือกไฟล์จากคอม
+                </button>
+              </div>
+
+              <!-- MODE 1: MOBILE QR CODE UPLOAD PANEL -->
+              <div id="slip-mode-qr-panel"
+                style="background: #ffffff; border: 2px dashed #e11d48; border-radius: 14px; padding: 16px; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 4px;">
+                  📱 ใช้มือถือสแกน QR เพื่อแนบสลิปได้ทันที
+                </div>
+                <div style="font-size: 0.76rem; color: #64748b; margin-bottom: 12px; line-height: 1.4;">
+                  เปิดกล้องมือถือ หรือแอป Line สแกน QR Code นี้<br>เพื่อเลือกรูปสลิปจากอัลบั้มในมือถือของคุณ
+                </div>
+
+                <!-- QR Code Container (Local Canvas/SVG Renderer + Fallback) -->
+                <div id="slip-upload-qr-box"
+                  style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 14px; padding: 10px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.06); position: relative; min-width: 180px; min-height: 180px;">
+                  <div id="slip-upload-qr-target"
+                    style="display: flex; align-items: center; justify-content: center; width: 170px; height: 170px;">
+                    <div
+                      style="color: #94a3b8; font-size: 0.8rem; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                      <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: #e11d48;"></i>
+                      <span>กำลังสร้าง QR Code...</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Live Radar Listening Indicator -->
+                <div id="slip-qr-listening-indicator"
+                  style="display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 10px;">
+                  <div
+                    style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.78rem; color: #0284c7; font-weight: 600;">
+                    <i class="fas fa-satellite-dish fa-fade"></i>
+                    <span>กำลังรอการส่งรูปสลิปจากมือถือ...</span>
+                    <span id="slip-qr-session-badge"
+                      style="background: #e0f2fe; color: #0369a1; padding: 1px 6px; border-radius: 4px; font-family: monospace; font-size: 0.7rem;">#READY</span>
+                  </div>
+                  <button type="button" onclick="window.fetchLatestMobileSlip()"
+                    style="background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; border-radius: 8px; padding: 5px 12px; font-size: 0.74rem; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;"
+                    onmouseover="this.style.background='#bae6fd'" onmouseout="this.style.background='#e0f2fe'">
+                    <i class="fas fa-rotate"></i> กดเพื่อดึงรูปสลิปล่าสุดทันที
+                  </button>
+                </div>
+
+                <!-- Wi-Fi Hint & Direct Link -->
+                <div style="margin-top: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                  <div
+                    style="font-size: 0.73rem; color: #0369a1; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 3px 10px; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-wifi" style="color: #0284c7;"></i>
+                    <span>มือถือและคอมพิวเตอร์เชื่อมต่อ Wi-Fi เดียวกัน</span>
+                  </div>
+                  <div id="slip-qr-url-hint"
+                    style="font-family: monospace; font-size: 0.7rem; color: #64748b; font-weight: 600;"></div>
+                </div>
+
+                <!-- Test / Direct link -->
+                <div style="margin-top: 6px; font-size: 0.74rem;">
+                  <a id="slip-upload-direct-link" href="#" target="_blank"
+                    style="color: #e11d48; text-decoration: underline; font-weight: 600;">
+                    <i class="fas fa-arrow-up-right-from-square"></i> หรือคลิกที่นี่เพื่อทดสอบเปิดหน้าอัพโหลดสลิป
+                  </a>
+                </div>
+              </div>
+
+              <!-- MODE 2: DESKTOP FILE DROPZONE PANEL -->
+              <div id="slip-mode-pc-panel"
+                style="display: none; background: #ffffff; border: 2px dashed #94a3b8; border-radius: 14px; padding: 20px 14px; text-align: center; cursor: pointer; transition: all 0.2s;"
+                onclick="document.getElementById('topup-slip-input').click();">
+                <div
+                  style="width: 48px; height: 48px; border-radius: 50%; background: #f1f5f9; color: #e11d48; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 1.3rem;">
+                  <i class="fas fa-folder-open"></i>
+                </div>
+                <div style="font-size: 0.88rem; font-weight: 700; color: #0f172a;">คลิกเพื่อเลือกไฟล์รูปภาพจากเครื่อง
+                </div>
+                <div style="font-size: 0.76rem; color: #64748b; margin-top: 4px;">รองรับไฟล์ .JPG, .PNG, .WEBP</div>
+              </div>
+
+              <input type="file" id="topup-slip-input" accept="image/*" style="display: none;"
+                onchange="window.topupManager.handleSlipSelected(this)">
+
+              <!-- UNIVERSAL PREVIEW BOX (Shown when slip is attached via Mobile QR or PC) -->
+              <div id="topup-slip-preview-container"
+                style="display: none; background: #ffffff; border: 2px solid #10b981; border-radius: 14px; padding: 14px; text-align: center; margin-top: 10px; box-shadow: 0 4px 15px rgba(16,185,129,0.15);">
+                <div
+                  style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 0.82rem;">
+                  <span style="color: #059669; font-weight: 700; display: flex; align-items: center; gap: 6px;"
+                    id="topup-slip-filename">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i> รูปภาพสลิปที่แนบแล้ว
+                  </span>
+                  <button type="button"
+                    style="background: #fef2f2; border: 1px solid #fecaca; color: #ef4444; padding: 4px 12px; border-radius: 6px; font-size: 0.74rem; cursor: pointer; font-weight: 600;"
+                    onclick="window.topupManager.resetSlipSelection()">
+                    <i class="fas fa-trash-alt"></i> ลบ / แนบรูปใหม่
+                  </button>
+                </div>
+                <div
+                  style="background: #090a10; border-radius: 10px; padding: 8px; display: inline-block; max-width: 100%;">
+                  <img id="topup-slip-preview" src="" alt="Slip Preview"
+                    style="max-height: 240px; max-width: 100%; border-radius: 6px; display: block; margin: 0 auto; object-fit: contain;">
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Action Buttons -->
+            <button class="btn-pink"
+              style="width: 100%; padding: 14px; font-size: 0.98rem; font-weight: 700; box-shadow: 0 4px 15px rgba(225,29,72,0.35); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;"
+              onclick="window.topupManager.confirmPaymentSimulation()">
+              <i class="fas fa-file-circle-check"></i> ตรวจสอบสลิปและเพิ่มเครดิตทันที
+            </button>
+
+            <button type="button" class="btn-outline-dark"
+              style="width: 100%; padding: 8px; font-size: 0.85rem; color: #64748b; border-color: #cbd5e1;"
+              onclick="window.topupManager.closeQrBox()">
+              <i class="fas fa-times"></i> ปิดหน้านี้
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Card 3: Privacy & Terms Accordion -->
+      <div class="topup-box-card" style="padding: 16px 20px; cursor: pointer;"
+        onclick="document.getElementById('privacy-content').classList.toggle('hidden')">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div
+            style="display: flex; align-items: center; gap: 10px; font-size: 0.88rem; font-weight: 700; color: #fff;">
+            <i class="fas fa-shield-halved" style="color: #f472b6;"></i>
+            <span>PRIVACY & TERMS · ความเป็นส่วนตัวและเงื่อนไข</span>
+          </div>
+          <i class="fas fa-chevron-down" style="font-size: 0.8rem; color: var(--text-dim);"></i>
+        </div>
+        <div id="privacy-content" class="hidden"
+          style="margin-top: 12px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+          การเติมเงินทุกรายการเป็นไปตามเงื่อนไขของเว็บไซต์ สินค้าและเงินที่เติมเข้ากระเป๋าไม่สามารถขอคืนเป็นเงินสดได้
+          หากพบปัญหาการเติมเงินสามารถติดต่อทีมงานผ่านเฟซบุ๊คเพจ LittleCloud Shop
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       PAGE 5: โปรไฟล์ (PROFILE VIEW - Image 5)
+       ======================================================================== -->
+  <main id="view-profile" class="container page-view-section" style="display: none;">
+
+    <div style="padding: 40px 0 10px;">
+      <div class="shop-tag">MY ACCOUNT</div>
+      <h2 class="shop-headline" style="font-size: 2.2rem;">โปรไฟล์ของฉัน</h2>
+      <p class="shop-subtext">ดูยอดเงิน สถิติ และประวัติการสั่งซื้อของคุณได้ในที่เดียว</p>
+    </div>
+
+    <div class="profile-two-col">
+
+      <!-- Left Column: User Profile Info -->
+      <div>
+        <div class="profile-user-card">
+          <img src="https://api.dicebear.com/7.x/bottts/svg?seed=LittleCloudUser" alt="Avatar"
+            class="profile-big-avatar" id="profile-card-avatar">
+          <h3 class="profile-user-name" id="profile-card-username">Gamer</h3>
+
+          <div class="discord-verified-pill">
+            <i class="fab fa-discord"></i> ยืนยันตัวตนแล้ว
+          </div>
+
+          <div class="user-id-box">
+            <span id="profile-card-userid">USER-0000000</span>
+            <i class="far fa-copy" style="cursor: pointer;"
+              onclick="navigator.clipboard.writeText(document.getElementById('profile-card-userid').textContent); Swal.fire({icon:'success', title:'คัดลอก ID แล้ว', timer:1000, showConfirmButton:false});"
+              title="คัดลอก ID"></i>
+          </div>
+
+          <button class="btn-outline-dark" style="width: 100%; padding: 8px; font-size: 0.85rem;"
+            onclick="window.refreshUserData()">
+            <i class="fas fa-rotate"></i> รีเฟรชยอดเงิน
+          </button>
+        </div>
+
+        <!-- Wallet Card -->
+        <div class="profile-user-card" style="text-align: left; align-items: flex-start;">
+          <span style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 4px;">เงินในกระเป๋า</span>
+          <div style="font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 16px;"
+            id="profile-wallet-balance">
+            0 บาท
+          </div>
+
+          <div style="display: flex; gap: 8px; width: 100%;">
+            <button class="btn-pink" style="flex: 1; padding: 10px;" onclick="window.navToTab('topup')">
+              <i class="fas fa-wallet"></i> เติมเงิน
+            </button>
+            <button class="btn-outline-dark" style="flex: 1; padding: 10px;" onclick="window.navToTab('shop')">
+              <i class="fas fa-bag-shopping"></i> เข้าร้าน
+            </button>
+          </div>
+        </div>
+
+        <!-- Logout / Switch Account -->
+        <button class="btn-outline-dark" style="width: 100%; color: #f87171; border-color: rgba(239, 68, 68, 0.3);"
+          onclick="window.authManager.logout()">
+          <i class="fas fa-power-off"></i> ออกจากระบบ
+        </button>
+      </div>
+
+      <!-- Right Column: History Tabs (Image 5) -->
+      <div class="history-container-card">
+        <div class="history-tabs-header">
+          <h4 style="font-size: 1.15rem; font-weight: 800; color: #fff;">ประวัติทั้งหมด</h4>
+          <div class="history-tab-group">
+            <button class="btn-pink" id="btn-hist-orders" style="padding: 6px 16px; font-size: 0.85rem;"
+              onclick="window.showHistoryTab('orders')">
+              <i class="fas fa-bag-shopping"></i> การซื้อ
+            </button>
+            <button class="btn-outline-dark" id="btn-hist-topups" style="padding: 6px 16px; font-size: 0.85rem;"
+              onclick="window.showHistoryTab('topups')">
+              <i class="fas fa-wallet"></i> เติมเงิน
+            </button>
+          </div>
+        </div>
+
+        <!-- Orders History List -->
+        <div id="history-orders-view">
+          <div id="profile-orders-list-content">
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-dim);">
+              <i class="fas fa-box-open"
+                style="font-size: 2.5rem; margin-bottom: 10px; display: block; opacity: 0.5;"></i>
+              <p>ยังไม่มีประวัติการสั่งซื้อ</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topups History List -->
+        <div id="history-topups-view" style="display: none;">
+          <div id="profile-topups-list-content">
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-dim);">
+              <i class="fas fa-receipt"
+                style="font-size: 2.5rem; margin-bottom: 10px; display: block; opacity: 0.5;"></i>
+              <p>ยังไม่มีประวัติการเติมเงิน</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ========================================================================
+       FOOTER (Image 2)
+       ======================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-four-col">
+
+        <div>
+          <div class="brand-logo" style="margin-bottom: 10px;">
+            <div class="logo-badge">
+              <i class="fas fa-cloud"></i>
+            </div>
+            <span class="brand-title brand-shop-name">Little Cloud</span>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; max-width: 320px;">
+            ศูนย์รวมบริการและขายสินค้าต่างๆ ภายในเกมส์รวบรวมไว้ในที่เดียว
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>ร้านค้า</h5>
+          <ul class="footer-links-list">
+            <li><a href="javascript:void(0)" onclick="window.navToTab('shop')">สินค้าทั้งหมด</a></li>
+            <li><a href="javascript:void(0)" onclick="window.navToTab('topup')">เติมเงิน</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>ช่วยเหลือ</h5>
+          <ul class="footer-links-list">
+            <li><a href="javascript:void(0)" onclick="window.navToTab('profile')">ประวัติการซื้อ</a></li>
+            <li><a href="javascript:void(0)" onclick="window.navToTab('profile')">ประวัติการเติมเงิน</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom-row">
+        <div>© 2026 LITTLE CLOUD. All Rights Reserved.</div>
+        <div style="display: flex; gap: 16px; font-size: 0.8rem;">
+          <span style="color: #34d399;"><i class="fas fa-shield-check"></i> ชำระผ่าน PromptPay</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================
+       MODAL: AUTHENTICATION (Login / Register)
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-auth">
+    <div class="modal-box"
+      style="background: #151622; border: 1px solid #292b3d; border-radius: 20px; max-width: 440px; padding: 0; overflow: hidden;">
+      <button class="modal-close-btn" onclick="window.authManager.closeAuthModal()">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div class="auth-tabs"
+        style="display: grid; grid-template-columns: 1fr 1fr; background: #101118; padding: 6px; gap: 6px;">
+        <button class="cat-pill" id="tab-btn-login" style="border-radius: 10px; padding: 10px;">เข้าสู่ระบบ</button>
+        <button class="cat-pill active" id="tab-btn-register"
+          style="border-radius: 10px; padding: 10px;">สมัครสมาชิก</button>
+      </div>
+
+      <div style="padding: 24px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h3 id="auth-modal-title" style="font-size: 1.4rem; color: #fff; font-weight: 800;">สมัครสมาชิก</h3>
+          <p id="auth-modal-sub" style="font-size: 0.85rem; color: var(--text-muted);">เข้าสู่ระบบ Little Cloud Shop</p>
+        </div>
+
+        <!-- Register Form -->
+        <form id="auth-form-register">
+          <div class="form-group" style="margin-bottom: 12px;">
+            <div style="position: relative;">
+              <input type="text" id="reg-username" class="input-dark" placeholder="ชื่อผู้ใช้งาน (อย่างน้อย 3 ตัวอักษร)"
+                required minlength="3"
+                style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 10px; padding: 12px 14px; width: 100%; color: #fff;">
+              <button type="button" id="btn-random-username"
+                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #f472b6; cursor: pointer; font-size: 1.1rem;"
+                title="สุ่มชื่อ">
+                <i class="fas fa-dice"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 12px;">
+            <input type="text" id="reg-pin" class="input-dark" placeholder="PIN 6 หลัก" maxlength="6" pattern="[0-9]{6}"
+              required inputmode="numeric"
+              style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 10px; padding: 12px 14px; width: 100%; color: #fff;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 12px;">
+            <input type="password" id="reg-password" class="input-dark" placeholder="รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)"
+              required minlength="6"
+              style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 10px; padding: 12px 14px; width: 100%; color: #fff;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 12px;">
+            <input type="password" id="reg-confirm-password" class="input-dark" placeholder="ยืนยันรหัสผ่านอีกครั้ง"
+              required minlength="6"
+              style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 10px; padding: 12px 14px; width: 100%; color: #fff;">
+          </div>
+
+          <!-- Password strength -->
+          <div style="margin-bottom: 18px;">
+            <div
+              style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 4px;">
+              <span>ความปลอดภัยของรหัสผ่าน</span>
+              <span id="strength-text" style="color: #f472b6;">รอกรอก</span>
+            </div>
+            <div style="height: 4px; background: #232536; border-radius: 2px; overflow: hidden;">
+              <div id="strength-bar-fill"
+                style="width: 0%; height: 100%; background: #ef4444; transition: width 0.3s ease;"></div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-pink" style="width: 100%; padding: 12px; font-size: 1rem;">
+            สมัครสมาชิกทันที
+          </button>
+        </form>
+
+        <!-- Login Form -->
+        <form id="auth-form-login" style="display: none;">
+          <div class="form-group" style="margin-bottom: 14px;">
+            <input type="text" id="login-username" class="input-dark" placeholder="ชื่อผู้ใช้งาน หรือ Username" required
+              style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 10px; padding: 12px 14px; width: 100%; color: #fff;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 18px;">
+            <input type="password" id="login-password" class="input-dark" placeholder="รหัสผ่าน หรือ PIN 6 หลัก"
+              required
+              style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 10px; padding: 12px 14px; width: 100%; color: #fff;">
+          </div>
+
+          <button type="submit" class="btn-pink" style="width: 100%; padding: 12px; font-size: 1rem;">
+            เข้าสู่ระบบ
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL: SUPABASE CONFIGURATION (Direct Connection Dialog)
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-supabase-config">
+    <div class="modal-box"
+      style="background: #151622; border: 1px solid #292b3d; border-radius: 20px; max-width: 520px; padding: 26px; box-shadow: 0 25px 60px rgba(0,0,0,0.85), 0 0 30px rgba(16, 185, 129, 0.15);">
+      <button class="modal-close-btn" onclick="window.closeSupabaseConfigModal()" type="button">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div style="margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+          <div
+            style="width: 38px; height: 38px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); display: flex; align-items: center; justify-content: center; color: #34d399; font-size: 1.2rem;">
+            <i class="fas fa-database"></i>
+          </div>
+          <div>
+            <h3 style="color: #34d399; font-size: 1.25rem; font-weight: 800; margin: 0;">ตั้งค่าเชื่อมต่อ Supabase
+              Database</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 2px 0 0 0;">เชื่อมโยงฐานข้อมูล Cloud
+              จริงเพื่อเก็บข้อมูลสินค้า, ผู้ใช้ และออเดอร์</p>
+          </div>
+        </div>
+      </div>
+
+      <form onsubmit="window.handleNativeSaveSupabase(event)">
+        <div style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 0.84rem; color: #e2e8f0; font-weight: 600;">Supabase Project URL / ID</label>
+            <span style="font-size: 0.72rem; color: #94a3b8;">(ใส่ได้ทั้ง URL, Dash link หรือ ref ID)</span>
+          </div>
+          <input type="text" id="native-supa-url" placeholder="https://hwzdowxjxtdhcgiylnbo.supabase.co" required
+            style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 10px; padding: 12px 14px; width: 100%; color: #fff; font-family: monospace; font-size: 0.88rem;">
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 0.84rem; color: #e2e8f0; font-weight: 600;">Supabase Anon / Public Key</label>
+            <span style="font-size: 0.72rem; color: #94a3b8;">(Publishable / JWT Anon Key)</span>
+          </div>
+          <textarea id="native-supa-key" rows="3" placeholder="sb_publishable_... หรือ eyJhbGciOi..." required
+            style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 10px; padding: 10px 14px; width: 100%; color: #fff; font-family: monospace; font-size: 0.82rem; resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 12px;">
+          <button type="submit" class="btn-pink"
+            style="padding: 12px; background: linear-gradient(135deg, #10b981, #059669); border: none; font-weight: 700;">
+            <i class="fas fa-plug"></i> บันทึกและเชื่อมต่อ Supabase
+          </button>
+          <button type="button" onclick="window.restoreDefaultSupabaseConfig()"
+            style="background: #1e202e; border: 1px solid #33364d; color: #94a3b8; border-radius: 10px; padding: 12px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+            <i class="fas fa-undo"></i> คืนค่าเริ่มต้น
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL: ADMIN CONTROL PANEL
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-admin-panel">
+    <div class="modal-box modal-box-large"
+      style="background: #141520; border: 1px solid #2b2d42; border-radius: 20px; max-width: 1040px; width: 95vw; padding: 0; overflow: hidden;">
+      <button class="modal-close-btn" onclick="window.adminManager.closeAdminModal()">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div style="padding: 20px 24px; background: #0f1017; border-bottom: 1px solid var(--border-subtle);">
+        <h3 style="color: #fbbf24; font-size: 1.25rem; font-weight: 800;"><i class="fas fa-crown"></i>
+          แผงควบคุมระบบแอดมิน (Admin Control Center)</h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">จัดการสินค้า, สมาชิก, และตั้งค่าเว็บไซต์ใน Supabase</p>
+      </div>
+
+      <div class="admin-tabs"
+        style="display: flex; gap: 8px; padding: 10px 20px; background: #10111a; border-bottom: 1px solid var(--border-subtle); flex-wrap: wrap;">
+        <button class="cat-pill active admin-tab-btn" data-pane="pane-admin-products">1. สินค้า (Products)</button>
+        <button class="cat-pill admin-tab-btn" data-pane="pane-admin-users">2. สมาชิก (Users)</button>
+        <button class="cat-pill admin-tab-btn" data-pane="pane-admin-orders">3. ออเดอร์ (Orders)</button>
+        <button class="cat-pill admin-tab-btn" data-pane="pane-admin-topups">4. รายการเติมเงิน (Topups &
+          Ledger)</button>
+        <button class="cat-pill admin-tab-btn" data-pane="pane-admin-site">5. ปรับแต่งเว็บ (Site Customizer)</button>
+        <button class="cat-pill admin-tab-btn" data-pane="pane-admin-reconciliation">6. ตรวจสอบบัญชี & Gateway</button>
+        <button class="cat-pill admin-tab-btn" data-pane="pane-admin-chat" style="position: relative;">
+          7. แชทลูกค้า (Live Chat)
+        </button>
+      </div>
+
+      <div class="admin-tab-content" style="padding: 24px; max-height: 65vh; overflow-y: auto;">
+
+        <!-- PANE 1: PRODUCTS -->
+        <div class="admin-tab-pane" id="pane-admin-products">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h4 style="color: #fff; font-size: 1.05rem; font-weight: 800;">รายการสินค้าในฐานข้อมูล Supabase</h4>
+            <button class="btn-pink" style="padding: 8px 18px; font-size: 0.85rem;"
+              onclick="window.adminManager.openAddProductModal()">
+              <i class="fas fa-plus"></i> เพิ่มสินค้าใหม่
+            </button>
+          </div>
+
+          <div class="admin-table-wrap"
+            style="border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden;">
+            <table class="admin-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #1a1b28; color: #a5a8bc; text-align: left; font-size: 0.85rem;">
+                  <th style="padding: 10px 14px;">รูป</th>
+                  <th style="padding: 10px 14px;">ชื่อสินค้า</th>
+                  <th style="padding: 10px 14px;">หมวดหมู่</th>
+                  <th style="padding: 10px 14px;">ราคา</th>
+                  <th style="padding: 10px 14px;">สต็อก</th>
+                  <th style="padding: 10px 14px;">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="admin-products-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PANE 2: USERS -->
+        <div class="admin-tab-pane" id="pane-admin-users" style="display: none;">
+          <h4 style="color: #fff; font-size: 1.05rem; font-weight: 800; margin-bottom: 12px;">สมาชิกในระบบ Supabase</h4>
+          <div class="admin-table-wrap"
+            style="border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden;">
+            <table class="admin-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #1a1b28; color: #a5a8bc; text-align: left; font-size: 0.85rem;">
+                  <th style="padding: 10px 14px;">ชื่อผู้ใช้</th>
+                  <th style="padding: 10px 14px;">บทบาท</th>
+                  <th style="padding: 10px 14px;">ยอดเงิน</th>
+                  <th style="padding: 10px 14px;">วันที่สมัคร</th>
+                  <th style="padding: 10px 14px;">การกระทำ</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PANE 3: ORDERS -->
+        <div class="admin-tab-pane" id="pane-admin-orders" style="display: none;">
+          <h4 style="color: #fff; font-size: 1.05rem; font-weight: 800; margin-bottom: 12px;">ออเดอร์ทั้งหมดใน Supabase
+          </h4>
+          <div class="admin-table-wrap"
+            style="border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden;">
+            <table class="admin-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #1a1b28; color: #a5a8bc; text-align: left; font-size: 0.85rem;">
+                  <th style="padding: 10px 14px;">รหัส</th>
+                  <th style="padding: 10px 14px;">ผู้สั่งซื้อ</th>
+                  <th style="padding: 10px 14px;">สินค้า</th>
+                  <th style="padding: 10px 14px;">ยอดเงิน</th>
+                  <th style="padding: 10px 14px;">รหัสจัดส่ง</th>
+                  <th style="padding: 10px 14px;">เวลา</th>
+                </tr>
+              </thead>
+              <tbody id="admin-orders-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PANE 4: TOPUPS & WALLET LEDGER (Requirement 4) -->
+        <div class="admin-tab-pane" id="pane-admin-topups" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h4 style="color: #fff; font-size: 1.1rem; font-weight: 800; margin: 0;">
+                <i class="fas fa-wallet" style="color: #34d399; margin-right: 6px;"></i> รายการเติมเงินทั้งหมด (Topup
+                History & Ledger)
+              </h4>
+              <p style="font-size: 0.8rem; color: #a5a8bc; margin: 2px 0 0;">ตรวจสอบยอดเงินเข้า ประวัติการโอน พร้อมเพย์
+                และสถานะเครดิตแบบเรียลไทม์</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-outline-dark"
+                style="padding: 7px 14px; font-size: 0.82rem; color: #f472b6; border-color: rgba(244, 114, 182, 0.35);"
+                onclick="window.adminManager.viewLatestServerSlip()">
+                <i class="fas fa-image"></i> สลิปล่าสุดในระบบ
+              </button>
+              <button class="btn-outline-dark" style="padding: 7px 14px; font-size: 0.82rem; color: #fff;"
+                onclick="window.adminManager.renderAdminTopupsTable()">
+                <i class="fas fa-rotate"></i> รีเฟรชข้อมูล
+              </button>
+            </div>
+          </div>
+
+          <!-- Topup Metric Cards -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px;">
+            <div style="background: #181926; border: 1px solid #292b3d; border-radius: 12px; padding: 14px;">
+              <span style="font-size: 0.75rem; color: #9496a8; display: block; margin-bottom: 4px;">💰
+                ยอดเติมเงินสะสมทั้งหมด</span>
+              <b style="font-size: 1.35rem; color: #34d399; font-family: 'Outfit', sans-serif;"
+                id="admin-topup-total-amount">฿ 0.00</b>
+            </div>
+            <div style="background: #181926; border: 1px solid #292b3d; border-radius: 12px; padding: 14px;">
+              <span style="font-size: 0.75rem; color: #9496a8; display: block; margin-bottom: 4px;">🧾
+                จำนวนรายการเติมเงินสำเร็จ</span>
+              <b style="font-size: 1.35rem; color: #60a5fa; font-family: 'Outfit', sans-serif;"
+                id="admin-topup-total-count">0 รายการ</b>
+            </div>
+            <div style="background: #181926; border: 1px solid #292b3d; border-radius: 12px; padding: 14px;">
+              <span style="font-size: 0.75rem; color: #9496a8; display: block; margin-bottom: 4px;">🟢
+                รายการล่าสุด</span>
+              <b style="font-size: 0.95rem; color: #f472b6; font-family: 'Outfit', sans-serif;"
+                id="admin-topup-latest-info">-</b>
+            </div>
+          </div>
+
+          <!-- Topup Transactions Table -->
+          <div class="admin-table-wrap"
+            style="border: 1px solid var(--border-subtle); border-radius: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table class="admin-table" style="width: 100%; min-width: 920px; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #1a1b28; color: #a5a8bc; text-align: left; font-size: 0.85rem;">
+                  <th style="padding: 10px 14px; white-space: nowrap;">วันที่ / เวลา</th>
+                  <th style="padding: 10px 14px; white-space: nowrap;">ผู้ใช้งาน</th>
+                  <th style="padding: 10px 14px; white-space: nowrap;">ยอดเงิน</th>
+                  <th style="padding: 10px 14px; white-space: nowrap;">ช่องทาง</th>
+                  <th style="padding: 10px 14px; white-space: nowrap;">รหัสอ้างอิงธุรกรรม</th>
+                  <th style="padding: 10px 14px; white-space: nowrap;">สถานะ</th>
+                  <th style="padding: 10px 14px; text-align: center; white-space: nowrap; min-width: 135px;">
+                    <button type="button" onclick="window.viewTopupSlipFromHeader()"
+                      style="background: linear-gradient(135deg, rgba(225, 29, 72, 0.2), rgba(244, 114, 182, 0.2)); border: 1px solid rgba(244, 114, 182, 0.45); color: #f472b6; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;"
+                      onmouseover="this.style.background='rgba(244, 114, 182, 0.35)'; this.style.transform='translateY(-1px)';"
+                      onmouseout="this.style.background='linear-gradient(135deg, rgba(225, 29, 72, 0.2), rgba(244, 114, 182, 0.2))'; this.style.transform='none';"
+                      title="คลิกเพื่อดูสลิปที่แนบในระบบ">
+                      <i class="fas fa-file-invoice-dollar"></i> สลิปการโอน
+                    </button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="admin-topups-table-body">
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 24px; color: #9496a8;">
+                    กำลังโหลดประวัติการเติมเงิน...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PANE 5: SITE SETTINGS -->
+        <div class="admin-tab-pane" id="pane-admin-site" style="display: none;">
+          <form id="form-admin-site-settings">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+              <div>
+                <label
+                  style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">ชื่อร้านค้า</label>
+                <input type="text" id="site-input-name"
+                  style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+              </div>
+              <div>
+                <label
+                  style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">สโลแกน</label>
+                <input type="text" id="site-input-tagline"
+                  style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+              </div>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+              <label
+                style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">แถบประกาศวิ่งด้านบน</label>
+              <input type="text" id="site-input-announcement"
+                style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+              <div>
+                <label
+                  style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">เบอร์พร้อมเพย์
+                  / เลขบัตร (รับเงิน)</label>
+                <input type="text" id="site-input-promptpay-num" placeholder="เช่น 0812345678"
+                  style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+              </div>
+              <div>
+                <label
+                  style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">ชื่อบัญชีผู้รับเงิน</label>
+                <input type="text" id="site-input-promptpay-name" placeholder="เช่น Little Cloud Shop"
+                  style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+              </div>
+            </div>
+
+            <button type="submit" class="btn-pink" style="width: 100%; padding: 12px; margin-top: 10px;">
+              <i class="fas fa-save"></i> บันทึกการเปลี่ยนแปลงเว็บไซต์ลง Supabase
+            </button>
+          </form>
+        </div>
+
+        <!-- PANE 5: RECONCILIATION & PAYMENT GATEWAY -->
+        <div class="admin-tab-pane" id="pane-admin-reconciliation" style="display: none;">
+
+          <!-- Reconciliation Status Banner -->
+          <div id="recon-status-banner"
+            style="padding: 14px 18px; border-radius: 12px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; background: rgba(16, 185, 129, 0.12); border: 1px solid #10b981; color: #34d399;">
+            <div style="display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem;">
+              <i class="fas fa-scale-balanced" style="font-size: 1.2rem;"></i>
+              <span id="recon-status-text">กำลังตรวจสอบยอดเงินและการกระทบยอด...</span>
+            </div>
+            <button class="btn-outline-dark" style="padding: 6px 14px; font-size: 0.8rem; color: #fff;"
+              onclick="window.adminManager.renderReconciliationDashboard()">
+              <i class="fas fa-rotate"></i> คำนวณใหม่
+            </button>
+          </div>
+
+          <!-- 4 Core Financial Metrics Grid -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+            <div style="background: #181926; border: 1px solid #292b3d; border-radius: 12px; padding: 14px;">
+              <span style="font-size: 0.75rem; color: #9496a8; display: block; margin-bottom: 4px;">💰 ยอดเงินเข้าจริง
+                (Inflow)</span>
+              <b style="font-size: 1.2rem; color: #34d399; font-family: 'Outfit', sans-serif;" id="recon-val-inflow">฿
+                0.00</b>
+            </div>
+            <div style="background: #181926; border: 1px solid #292b3d; border-radius: 12px; padding: 14px;">
+              <span style="font-size: 0.75rem; color: #9496a8; display: block; margin-bottom: 4px;">🏷️
+                เครดิตออกทั้งหมด</span>
+              <b style="font-size: 1.2rem; color: #f472b6; font-family: 'Outfit', sans-serif;" id="recon-val-issued">฿
+                0.00</b>
+            </div>
+            <div style="background: #181926; border: 1px solid #292b3d; border-radius: 12px; padding: 14px;">
+              <span style="font-size: 0.75rem; color: #9496a8; display: block; margin-bottom: 4px;">🛍️
+                เครดิตถูกใช้ซื้อของ</span>
+              <b style="font-size: 1.2rem; color: #fbbf24; font-family: 'Outfit', sans-serif;" id="recon-val-spent">฿
+                0.00</b>
+            </div>
+            <div style="background: #181926; border: 1px solid #292b3d; border-radius: 12px; padding: 14px;">
+              <span style="font-size: 0.75rem; color: #9496a8; display: block; margin-bottom: 4px;">👛
+                หนี้สินเครดิตคงค้าง</span>
+              <b style="font-size: 1.2rem; color: #60a5fa; font-family: 'Outfit', sans-serif;" id="recon-val-balance">฿
+                0.00</b>
+            </div>
+          </div>
+
+          <!-- Payment Gateway API Settings Accordion -->
+          <div
+            style="background: #181926; border: 1px solid #292b3d; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
+            <h5 style="color: #fff; font-size: 0.95rem; font-weight: 700; margin-bottom: 12px;">
+              <i class="fas fa-network-wired" style="color: #f472b6;"></i> ตั้งค่า Payment Gateway API (รับเงินจริง &
+              SlipOK)
+            </h5>
+            <form id="form-admin-gateway-settings" onsubmit="window.adminManager.handleSaveGatewaySettings(event)">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div>
+                  <label style="display: block; font-size: 0.8rem; color: #9496a8; margin-bottom: 4px;">Payment Gateway
+                    Provider</label>
+                  <select id="gateway-input-provider"
+                    style="background: #12131c; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+                    <option value="omise_promptpay">Omise (Opn Payments) Charges PromptPay</option>
+                    <option value="promptpay_slipok">SlipOK API (ตรวจสอบสลิปอัตโนมัติ 24 ชม.)</option>
+                    <option value="promptpay_auto">PromptPay Dynamic QR (Auto-Verify Callback)</option>
+                    <option value="easyslip">EasySlip API</option>
+                    <option value="gbprimepay">GBPrimePay Gateway</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.8rem; color: #9496a8; margin-bottom: 4px;">SlipOK Branch ID
+                    (รหัสสาขา)</label>
+                  <input type="text" id="gateway-input-branch" placeholder="เช่น 12345"
+                    style="background: #12131c; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                <div>
+                  <label style="display: block; font-size: 0.8rem; color: #9496a8; margin-bottom: 4px;">SlipOK API Key
+                    (x-authorization)</label>
+                  <input type="password" id="gateway-input-key" placeholder="SLIPOK_API_KEY_..."
+                    style="background: #12131c; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.8rem; color: #9496a8; margin-bottom: 4px;">Webhook Secret
+                    Token</label>
+                  <input type="text" id="gateway-input-secret" placeholder="WH_SECRET_KEY"
+                    style="background: #12131c; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+                </div>
+              </div>
+
+              <button type="submit" class="btn-pink" style="padding: 10px 20px; font-size: 0.88rem;">
+                <i class="fas fa-save"></i> บันทึกการตั้งค่า Gateway ลง Supabase
+              </button>
+            </form>
+          </div>
+
+          <!-- SlipOK AI Inspector & Test Suite (From nextjs-slipok-api-main) -->
+          <div style="background: #181926; border: 1px solid rgba(244, 114, 182, 0.35); border-radius: 14px; padding: 18px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+              <h5 style="color: #fff; font-size: 0.95rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-brain" style="color: #f472b6;"></i>
+                เครื่องมือทดสอบเช็คสลิปด้วย SlipOK AI (NextJS Integration)
+              </h5>
+              <button type="button" class="btn-outline-dark" style="font-size: 0.78rem; padding: 5px 12px; color: #38bdf8; border-color: rgba(56, 189, 248, 0.3);" onclick="window.adminManager.testSlipOkConnection()">
+                <i class="fas fa-plug"></i> ทดสอบการเชื่อมต่อ SlipOK API
+              </button>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: #9496a8; line-height: 1.5; margin-bottom: 14px;">
+              ทดสอบอัปโหลดรูปภาพสลิปเพื่อเรียกดูข้อมูลที่ระบบ SlipOK AI ตรวจจับได้จริง (เช่น ยอดเงิน, ผู้รับโอน, ธนาคาร, วันที่/เวลา) โดยอ้างอิงและเชื่อมกับโปรเจกต์ <code>nextjs-slipok-api-main</code>
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
+              <!-- Upload / Input -->
+              <div style="background: #12131c; border: 1px solid #282a3c; border-radius: 12px; padding: 14px;">
+                <label style="display: block; font-size: 0.82rem; color: #e2e8f0; font-weight: 600; margin-bottom: 6px;">
+                  เลือกไฟล์สลิปเพื่อทดสอบ
+                </label>
+                <input type="file" id="slipok-test-file-input" accept="image/*" style="display: block; width: 100%; font-size: 0.78rem; color: #a5a8bc; margin-bottom: 10px;" onchange="window.adminManager.handleSlipOkTestFileSelected(this)">
+                
+                <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                  <button type="button" class="btn-pink" id="btn-run-slipok-test" style="flex: 1; padding: 8px 14px; font-size: 0.82rem; font-weight: 700;" onclick="window.adminManager.runSlipOkTest()">
+                    <i class="fas fa-magnifying-glass"></i> ตรวจสอบสลิปด้วย SlipOK
+                  </button>
+                  <button type="button" class="btn-outline-dark" style="padding: 8px 12px; font-size: 0.78rem;" onclick="window.adminManager.loadSampleSlipIntoTest()">
+                    โหลดสลิปตัวอย่าง
+                  </button>
+                </div>
+
+                <!-- Preview Box -->
+                <div id="slipok-test-preview-box" style="width: 100%; min-height: 180px; max-height: 260px; background: #0a0b12; border: 1px dashed #2d2f45; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 6px;">
+                  <span id="slipok-test-preview-empty" style="color: #64748b; font-size: 0.78rem;">ยังไม่ได้เลือกไฟล์รูปภาพ</span>
+                  <img id="slipok-test-preview-img" src="" alt="Test Slip" style="display: none; max-width: 100%; max-height: 240px; object-fit: contain; border-radius: 6px;">
+                </div>
+              </div>
+
+              <!-- Output Result Card -->
+              <div style="background: #12131c; border: 1px solid #282a3c; border-radius: 12px; padding: 14px; min-height: 310px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <span style="font-size: 0.82rem; color: #e2e8f0; font-weight: 700;">ผลการตรวจสอบจาก SlipOK AI</span>
+                  <span id="slipok-test-status-badge" style="display: none; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px; font-weight: 700;"></span>
+                </div>
+
+                <div id="slipok-test-result-body">
+                  <div style="text-align: center; color: #64748b; padding: 40px 10px; font-size: 0.8rem;">
+                    <i class="fas fa-file-invoice" style="font-size: 2.2rem; opacity: 0.3; margin-bottom: 8px; display: block;"></i>
+                    เลือกรูปสลิปแล้วกด "ตรวจสอบสลิปด้วย SlipOK" เพื่อดูผลการอ่านค่า AI
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Immutable Ledger Audit Logs Table -->
+          <h5 style="color: #fff; font-size: 0.95rem; font-weight: 700; margin-bottom: 12px;">
+            <i class="fas fa-list-check" style="color: #34d399;"></i> ประวัติธุรกรรมเครดิต (Immutable Ledger &
+            Transaction Logs)
+          </h5>
+          <div class="admin-table-wrap"
+            style="border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden;">
+            <table class="admin-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #1a1b28; color: #a5a8bc; text-align: left; font-size: 0.82rem;">
+                  <th style="padding: 8px 12px;">เวลา</th>
+                  <th style="padding: 8px 12px;">ผู้ใช้</th>
+                  <th style="padding: 8px 12px;">ประเภท</th>
+                  <th style="padding: 8px 12px;">จำนวน</th>
+                  <th style="padding: 8px 12px;">ก่อน -> หลัง</th>
+                  <th style="padding: 8px 12px;">เลขอ้างอิง (Ref)</th>
+                </tr>
+              </thead>
+              <tbody id="admin-ledger-table-body">
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 20px; color: #9496a8;">กำลังโหลด Ledger...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- PANE 7: CUSTOMER LIVE CHAT CONSOLE -->
+        <div class="admin-tab-pane" id="pane-admin-chat" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div>
+              <h4
+                style="color: #fff; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-comments" style="color: #f472b6;"></i> ศูนย์จัดการแชทลูกค้าสด (Customer Live Chat
+                Console)
+              </h4>
+              <p style="font-size: 0.8rem; color: #9496a8; margin-top: 2px;">
+                สนทนาเรียลไทม์กับลูกค้า ส่งมอบไอเทม สรุปปัญหา และบริการหลังการขาย
+              </p>
+            </div>
+            <button type="button" class="btn-outline-dark" style="padding: 6px 14px; font-size: 0.82rem; color: #fff;"
+              onclick="window.chatManager && window.chatManager.renderAdminChatPane()">
+              <i class="fas fa-rotate"></i> รีเฟรชแชท
+            </button>
+          </div>
+
+          <div
+            style="display: grid; grid-template-columns: 290px 1fr; gap: 14px; background: #10111a; border: 1px solid #232536; border-radius: 14px; height: 530px; overflow: hidden;">
+            <!-- Threads List Sidebar -->
+            <div style="border-right: 1px solid #232536; display: flex; flex-direction: column; background: #0f1017;">
+              <div
+                style="padding: 12px 14px; background: #161724; border-bottom: 1px solid #232536; font-size: 0.82rem; font-weight: 700; color: #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fas fa-inbox" style="color: #f472b6;"></i> ห้องสนทนาลูกค้า</span>
+              </div>
+              <div id="admin-chat-threads-list" style="flex: 1; overflow-y: auto;">
+                <div style="text-align: center; color: #64748b; font-size: 0.82rem; padding: 40px 12px;">
+                  กำลังโหลดข้อมูล...
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Chat Conversation View -->
+            <div style="display: flex; flex-direction: column; height: 100%; position: relative; background: #141520;">
+              <!-- Header info -->
+              <div
+                style="padding: 12px 16px; background: #171826; border-bottom: 1px solid #232536; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-size: 0.92rem; font-weight: 800; color: #fff;" id="admin-chat-header-title">
+                    เลือกลูกค้าเพื่อเริ่มสนทนา</div>
+                  <div style="font-size: 0.75rem; color: #9496a8;" id="admin-chat-header-order">
+                    คลิกเลือกห้องสนทนาจากรายการด้านซ้าย</div>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" class="btn-outline-dark" style="padding: 4px 10px; font-size: 0.74rem;"
+                    onclick="window.chatManager && window.chatManager.adminSendQuick('✅ ดำเนินการส่งมอบไอเทมเรียบร้อยแล้วครับ ขอบคุณที่ใช้บริการ Little Cloud!')">
+                    🚀 ส่งมอบแล้ว
+                  </button>
+                  <button type="button" class="btn-outline-dark" style="padding: 4px 10px; font-size: 0.74rem;"
+                    onclick="window.chatManager && window.chatManager.adminSendQuick('กรุณารอสักครู่ แอดมินกำลังเช็คสต็อกและส่งของในเกม FiveM ให้ครับ 🚗')">
+                    ⏳ รอสักครู่
+                  </button>
+                  <button type="button" class="btn-outline-dark" style="padding: 4px 10px; font-size: 0.74rem;"
+                    onclick="window.chatManager && window.chatManager.adminSendQuick('รบกวนลูกค้าแจ้งชื่อตัวละครในเกม FiveM และจุดที่ยืนอยู่ตอนนี้ด้วยครับ ✨')">
+                    👤 ขอชื่อตัวละคร
+                  </button>
+                </div>
+              </div>
+
+              <!-- Message Stream -->
+              <div id="admin-chat-messages-box"
+                style="flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column;">
+                <div style="text-align: center; color: #64748b; font-size: 0.85rem; margin: auto;">
+                  <i class="fas fa-hand-pointer"
+                    style="font-size: 2rem; margin-bottom: 10px; display: block; opacity: 0.4;"></i>
+                  เลือกห้องสนทนาทางด้านซ้ายเพื่อพูดคุยกับลูกค้า
+                </div>
+              </div>
+
+              <!-- Admin Input Area -->
+              <div style="padding: 12px 16px; background: #171826; border-top: 1px solid #232536;">
+                <form onsubmit="event.preventDefault(); window.chatManager && window.chatManager.adminSendMessage();"
+                  style="display: flex; gap: 8px;">
+                  <input type="text" id="admin-chat-input-text" placeholder="พิมพ์ข้อความตอบกลับลูกค้า..."
+                    style="flex: 1; background: #0e0f17; border: 1px solid #2a2c3f; border-radius: 8px; padding: 10px 14px; color: #fff; font-size: 0.88rem;">
+                  <button type="submit" class="btn-pink" style="padding: 10px 20px; font-weight: 700;">
+                    <i class="fas fa-paper-plane"></i> ส่ง
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL: ADMIN SLIP VIEWER (Transfer Slip Inspection)
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-admin-slip-viewer"
+    onclick="if(event.target.id === 'modal-admin-slip-viewer') window.closeSlipViewerModal()">
+    <div class="modal-box modal-box-large"
+      style="background: #12131d; border: 1px solid #2d2f48; border-radius: 20px; max-width: 860px; padding: 0; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.9), 0 0 35px rgba(244, 114, 182, 0.2);">
+
+      <!-- Modal Header -->
+      <div
+        style="padding: 16px 22px; background: #0c0d15; border-bottom: 1px solid #232538; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div
+            style="width: 38px; height: 38px; border-radius: 10px; background: rgba(244, 114, 182, 0.15); border: 1px solid rgba(244, 114, 182, 0.3); display: flex; align-items: center; justify-content: center; color: #f472b6; font-size: 1.15rem;">
+            <i class="fas fa-file-invoice-dollar"></i>
+          </div>
+          <div>
+            <h4 style="margin: 0; color: #fff; font-size: 1.05rem; font-weight: 800;">หลักฐานสลิปการโอนเงิน (Transfer
+              Slip Details)</h4>
+            <p style="margin: 2px 0 0; color: #9496a8; font-size: 0.76rem;" id="admin-slip-modal-subtitle">
+              ตรวจสอบสลิปโอนเงิน ยอดชำระ และสถานะเกตเวย์</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" style="position: static;" onclick="window.closeSlipViewerModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Two-Column Responsive Grid) -->
+      <div
+        style="padding: 22px; display: grid; grid-template-columns: 1.05fr 1fr; gap: 20px; max-height: calc(85vh - 70px); overflow-y: auto;"
+        id="admin-slip-content-grid">
+
+        <!-- Column 1: Slip Image View -->
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div id="admin-slip-image-container"
+            style="width: 100%; min-height: 380px; max-height: 480px; background: #08090f; border: 1px solid #232538; border-radius: 14px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; padding: 10px;">
+            <img id="admin-slip-image" src="" alt="สลิปการโอนเงิน"
+              style="max-width: 100%; max-height: 460px; object-fit: contain; border-radius: 8px; transition: transform 0.25s ease; cursor: zoom-in;"
+              onclick="window.adminManager.toggleSlipZoom()">
+
+            <div id="admin-slip-placeholder"
+              style="display: none; text-align: center; padding: 30px 16px; color: #64748b;">
+              <i class="fas fa-receipt"
+                style="font-size: 3.5rem; opacity: 0.4; margin-bottom: 12px; display: block; color: #94a3b8;"></i>
+              <b
+                style="color: #cbd5e1; font-size: 0.95rem; display: block; margin-bottom: 4px;">ยังไม่มีไฟล์รูปภาพสลิป</b>
+              <span style="font-size: 0.78rem;">รายการนี้อาจเป็นการเติมผ่าน Direct Gateway หรือยังไม่ได้แนบสลิป</span>
+            </div>
+          </div>
+
+          <!-- Image Tool Bar -->
+          <div
+            style="display: flex; gap: 8px; margin-top: 12px; width: 100%; justify-content: center; flex-wrap: wrap;">
+            <a id="admin-slip-download-btn" href="#" target="_blank" download="slip.jpg" class="btn-outline-dark"
+              style="font-size: 0.78rem; padding: 6px 12px; color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); display: inline-flex; align-items: center; gap: 6px;">
+              <i class="fas fa-arrow-up-right-from-square"></i> เปิดภาพเต็ม / บันทึก
+            </a>
+            <button type="button" class="btn-outline-dark" onclick="window.adminManager.rotateSlipImage()"
+              style="font-size: 0.78rem; padding: 6px 12px; color: #cbd5e1; display: inline-flex; align-items: center; gap: 6px;">
+              <i class="fas fa-rotate"></i> หมุนรูป
+            </button>
+            <label class="btn-outline-dark"
+              style="font-size: 0.78rem; padding: 6px 12px; color: #f472b6; border-color: rgba(244, 114, 182, 0.3); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; margin: 0;">
+              <i class="fas fa-upload"></i> แนบสลิปใหม่
+              <input type="file" id="admin-slip-replace-input" accept="image/*" style="display: none;"
+                onchange="window.adminManager.handleAdminUploadSlip(this)">
+            </label>
+          </div>
+        </div>
+
+        <!-- Column 2: Transaction Details & Verification Meta -->
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+
+          <!-- Amount Highlight Card -->
+          <div
+            style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 78, 59, 0.15)); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 0.75rem; color: #a7f3d0; font-weight: 600;">ยอดเงินที่ตรวจพบในรายการ</span>
+              <span id="admin-slip-status-badge"
+                style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700;">
+                <i class="fas fa-circle-check"></i> สำเร็จ (Approved)
+              </span>
+            </div>
+            <div style="font-size: 1.8rem; font-weight: 800; color: #34d399; font-family: 'Outfit', sans-serif;"
+              id="admin-slip-amount">
+              ฿ 0.00
+            </div>
+          </div>
+
+          <!-- Metadata List -->
+          <div
+            style="background: #181926; border: 1px solid #282a3d; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 0.82rem;">
+
+            <div
+              style="display: flex; justify-content: space-between; border-bottom: 1px solid #232536; padding-bottom: 8px;">
+              <span style="color: #9496a8;"><i class="fas fa-user" style="width: 16px;"></i> ผู้ใช้งาน</span>
+              <b style="color: #fff;" id="admin-slip-username">-</b>
+            </div>
+
+            <div
+              style="display: flex; justify-content: space-between; border-bottom: 1px solid #232536; padding-bottom: 8px;">
+              <span style="color: #9496a8;"><i class="far fa-clock" style="width: 16px;"></i> วันที่ / เวลา</span>
+              <span style="color: #cbd5e1;" id="admin-slip-date">-</span>
+            </div>
+
+            <div
+              style="display: flex; justify-content: space-between; border-bottom: 1px solid #232536; padding-bottom: 8px;">
+              <span style="color: #9496a8;"><i class="fas fa-qrcode" style="width: 16px;"></i> ช่องทางชำระ</span>
+              <span style="color: #60a5fa; font-weight: 600;" id="admin-slip-method">-</span>
+            </div>
+
+            <div
+              style="display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid #232536; padding-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: #9496a8;"><i class="fas fa-hashtag" style="width: 16px;"></i>
+                  รหัสอ้างอิงธุรกรรม</span>
+                <button type="button" onclick="window.adminManager.copyCurrentTransRef()"
+                  style="background: none; border: none; color: #f472b6; font-size: 0.72rem; cursor: pointer; padding: 0;">
+                  <i class="far fa-copy"></i> คัดลอก
+                </button>
+              </div>
+              <code
+                style="background: #0f1018; padding: 6px 8px; border-radius: 6px; color: #facc15; font-size: 0.78rem; word-break: break-all; border: 1px solid #2a2c40;"
+                id="admin-slip-ref">
+                -
+              </code>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; padding-top: 2px;">
+              <span style="color: #9496a8;"><i class="fas fa-shield-halved" style="width: 16px;"></i> ตรวจสอบโดย</span>
+              <span style="color: #a5a8bc;" id="admin-slip-verified-by">Payment Gateway Webhook</span>
+            </div>
+          </div>
+
+          <!-- Bank Verification Alert / Status Notice -->
+          <div
+            style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 12px; padding: 12px; font-size: 0.76rem; color: #9496a8; display: flex; gap: 10px; align-items: flex-start;">
+            <i class="fas fa-circle-info" style="color: #38bdf8; font-size: 0.95rem; margin-top: 2px;"></i>
+            <div style="line-height: 1.5;">
+              <b style="color: #e2e8f0; display: block; margin-bottom: 2px;">การตรวจสอบสลิปของระบบ</b>
+              <span>ระบบตรวจสอบความถูกต้องผ่านรหัส QR ธนาคาร (BOT Standard) ป้องกันการนำสลิปเก่ามาใช้ซ้ำ
+                และบันทึกลงระบบบัญชีเรียบร้อย</span>
+            </div>
+          </div>
+
+          <!-- Admin Pending Action Controls (Approve / Reject) -->
+          <div id="admin-slip-pending-actions"
+            style="display: none; background: rgba(245, 158, 11, 0.12); border: 1px solid #f59e0b; border-radius: 12px; padding: 12px; margin-top: 2px;">
+            <div style="font-size: 0.82rem; font-weight: 700; color: #fbbf24; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <i class="fas fa-triangle-exclamation"></i> รายการนี้รอแอดมินตรวจสอบยอดเงินเข้าบัญชีก่อนเติมพอยท์
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-pink" id="admin-btn-approve-topup"
+                style="flex: 1; padding: 10px; font-size: 0.84rem; font-weight: 700; background: #10b981; border-color: #10b981; display: inline-flex; align-items: center; justify-content: center; gap: 6px;"
+                onclick="window.adminManager.approveActiveSlip()">
+                <i class="fas fa-circle-check"></i> อนุมัติ & เติมพอยท์
+              </button>
+              <button type="button" class="btn-outline-dark" id="admin-btn-reject-topup"
+                style="flex: 1; padding: 10px; font-size: 0.84rem; font-weight: 700; color: #fca5a5; border-color: #ef4444; display: inline-flex; align-items: center; justify-content: center; gap: 6px;"
+                onclick="window.adminManager.rejectActiveSlip()">
+                <i class="fas fa-circle-xmark"></i> ปฏิเสธ (สลิปปลอม)
+              </button>
+            </div>
+          </div>
+
+          <!-- Close Button -->
+          <button type="button" class="btn-pink"
+            style="width: 100%; padding: 10px; font-size: 0.88rem; font-weight: 700; margin-top: auto;"
+            onclick="window.closeSlipViewerModal()">
+            <i class="fas fa-check"></i> เรียบร้อย (ปิดหน้าต่าง)
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL: ADMIN ADD / EDIT PRODUCT
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-admin-add-product">
+    <div class="modal-box"
+      style="background: #151622; border: 1px solid #292b3d; border-radius: 20px; max-width: 540px; padding: 24px;">
+      <button class="modal-close-btn" onclick="window.adminManager.closeProductFormModal()">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <h3 id="admin-product-modal-title"
+        style="color: #fff; font-size: 1.25rem; font-weight: 800; margin-bottom: 16px;">เพิ่มรายการสินค้าใหม่</h3>
+
+      <form id="form-admin-product">
+        <div style="margin-bottom: 12px;">
+          <label
+            style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">ชื่อสินค้า</label>
+          <input type="text" id="prod-input-name" placeholder="เช่น PACK GACHA SS1 19,999 หรือ GARDIAN V.1" required
+            style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+          <div>
+            <label
+              style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">หมวดหมู่</label>
+            <select id="prod-input-category"
+              style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+              <option value="Pack">Pack</option>
+              <option value="Battlepass">Battlepass</option>
+              <option value="เงิน M">เงิน M</option>
+              <option value="สกินอาวุธ">สกินอาวุธ (Skin Weapon)</option>
+              <option value="Daily Login">Daily Login</option>
+              <option value="อื่นๆ">อื่นๆ</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">เซิร์ฟเวอร์
+              / แท็ก</label>
+            <input type="text" id="prod-input-server" placeholder="เช่น FiveM Jelly Town"
+              style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+          <div>
+            <label style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">ราคาขาย
+              (บาท)</label>
+            <input type="number" id="prod-input-price" placeholder="19999" required
+              style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+          </div>
+          <div>
+            <label
+              style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">ราคาเต็มเดิม</label>
+            <input type="number" id="prod-input-original-price" placeholder="25000"
+              style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">สต็อก
+              (ชิ้น)</label>
+            <input type="number" id="prod-input-stock" placeholder="99" required
+              style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">URL
+            รูปภาพสินค้า</label>
+          <input type="text" id="prod-input-image" placeholder="https://..."
+            style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+        </div>
+
+        <!-- Video or GIF Preview URL (Skin Weapon Video Requirement) -->
+        <div style="margin-bottom: 12px;" id="prod-input-video-wrap">
+          <label style="display: block; font-size: 0.82rem; color: #f472b6; font-weight: 700; margin-bottom: 4px;">
+            <i class="fas fa-video"></i> ลิงก์วิดีโอตัวอย่างหรือ GIF สกิน (Video / GIF URL)
+          </label>
+          <input type="text" id="prod-input-video" placeholder="เช่น https://.../preview.mp4 หรือ .gif หรือ YouTube URL"
+            style="background: #1a1b28; border: 1px solid rgba(244, 114, 182, 0.45); border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+          <small style="color: #9496a8; font-size: 0.74rem;">รองรับไฟล์ .mp4, .webm, รูป .gif, หรือลิงก์ YouTube
+            เพื่อแสดงวิดีโอตัวอย่างเมื่อลูกค้ากดดูสกิน</small>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label
+            style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">รายละเอียดสินค้า
+            (Description)</label>
+          <textarea id="prod-input-desc" rows="3"
+            placeholder="ระบุรายละเอียด เช่น ความละเอียด 4K, เอฟเฟกต์แสงนีออน, Custom Sound..."
+            style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff; resize: vertical;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label
+            style="display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">ข้อมูลจัดส่งอัตโนมัติ
+            / Item Key</label>
+          <input type="text" id="prod-input-delivery" placeholder="เช่น GACHA-PACK-KEY-9999"
+            style="background: #1a1b28; border: 1px solid #2c2e42; border-radius: 8px; padding: 10px; width: 100%; color: #fff;">
+        </div>
+
+        <button type="submit" class="btn-pink" style="width: 100%; padding: 12px;">
+          <i class="fas fa-cloud-arrow-up"></i> บันทึกเข้า Supabase ทันที
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL: SKIN WEAPON DETAIL & VIDEO / GIF PREVIEW
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-skin-detail"
+    onclick="if(event.target.id === 'modal-skin-detail') window.shopManager.closeSkinDetailModal()">
+    <div class="modal-box modal-box-large"
+      style="background: #12131d; border: 1px solid #2d2f48; border-radius: 22px; max-width: 900px; padding: 0; overflow: hidden; box-shadow: 0 25px 65px rgba(0,0,0,0.9), 0 0 35px rgba(244, 114, 182, 0.25);">
+
+      <!-- Modal Header -->
+      <div
+        style="padding: 16px 22px; background: #0c0d15; border-bottom: 1px solid #232538; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div
+            style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, rgba(225, 29, 72, 0.2), rgba(244, 114, 182, 0.3)); border: 1px solid rgba(244, 114, 182, 0.45); display: flex; align-items: center; justify-content: center; color: #f472b6; font-size: 1.25rem;">
+            <i class="fas fa-crosshairs"></i>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <h4 id="skin-modal-title" style="margin: 0; color: #fff; font-size: 1.15rem; font-weight: 800;">
+                ชื่อสกินอาวุธ</h4>
+              <span id="skin-modal-badge"
+                style="background: #e11d48; color: #fff; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px; font-weight: 700;">-31฿</span>
+            </div>
+            <p id="skin-modal-server" style="margin: 2px 0 0; color: #38bdf8; font-size: 0.78rem; font-weight: 600;">
+              FiveM & GTA</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" style="position: static;" onclick="window.shopManager.closeSkinDetailModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Two-Column Responsive Layout) -->
+      <div
+        style="padding: 22px; display: grid; grid-template-columns: 1.15fr 1fr; gap: 22px; max-height: calc(85vh - 70px); overflow-y: auto;"
+        id="skin-modal-grid-body">
+
+        <!-- Left: Video / GIF / Media Container -->
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div id="skin-modal-media-container"
+            style="width: 100%; min-height: 290px; max-height: 420px; background: #08090f; border: 1px solid #2d2f48; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);">
+            <!-- Populated dynamically via JS -->
+          </div>
+
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; color: #9496a8; padding: 0 4px;">
+            <span id="skin-modal-media-status"><i class="fas fa-circle-play" style="color: #f472b6;"></i>
+              วิดีโอตัวอย่างแอนิเมชันในเกม</span>
+            <span id="skin-modal-stock" style="color: #34d399; font-weight: 700;"></span>
+          </div>
+        </div>
+
+        <!-- Right: Details, Pricing, & Actions -->
+        <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 16px;">
+          <div>
+            <!-- Price Card -->
+            <div
+              style="background: linear-gradient(135deg, rgba(225, 29, 72, 0.12), rgba(244, 114, 182, 0.08)); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 14px; padding: 14px 18px; margin-bottom: 14px;">
+              <div
+                style="font-size: 0.74rem; color: #f472b6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                ราคาพิเศษเฉพาะคุณ</div>
+              <div style="display: flex; align-items: baseline; gap: 10px; margin-top: 4px;">
+                <span id="skin-modal-price"
+                  style="font-size: 2rem; font-weight: 900; color: #fff; font-family: 'Outfit', sans-serif;">89 ฿</span>
+                <span id="skin-modal-orig-price"
+                  style="font-size: 1rem; color: #64748b; text-decoration: line-through;">120 ฿</span>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div style="margin-bottom: 14px;">
+              <h5
+                style="color: #e2e8f0; font-size: 0.88rem; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <i class="fas fa-circle-info" style="color: #38bdf8;"></i> รายละเอียดของสกิน
+              </h5>
+              <div id="skin-modal-desc"
+                style="color: #cbd5e1; font-size: 0.86rem; line-height: 1.6; background: #161724; border: 1px solid #282a3d; border-radius: 12px; padding: 12px 14px; white-space: pre-line; max-height: 160px; overflow-y: auto;">
+                รายละเอียดสกินอาวุธ
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button id="skin-modal-buy-btn" class="btn-pink"
+                style="width: 100%; padding: 13px; font-size: 0.98rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 10px 25px rgba(225, 29, 72, 0.4);">
+                <i class="fas fa-cart-shopping"></i> สั่งซื้อสกินนี้ทันที
+              </button>
+              <button id="skin-modal-chat-btn" type="button" class="btn-outline-dark"
+                style="width: 100%; padding: 10px; font-size: 0.84rem; display: flex; align-items: center; justify-content: center; gap: 8px; color: #cbd5e1; border-color: #33364d;">
+                <i class="fas fa-comments"></i> สอบถามแอดมินเกี่ยวกับสกินนี้
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Floating Customer Live Chat Trigger -->
+    <button id="floating-chat-trigger" class="floating-chat-trigger"
+      onclick="window.chatManager && window.chatManager.toggleChat()" title="คุยสดกับแอดมิน Little Cloud">
+      <i class="fas fa-headset" style="font-size: 1.15rem;"></i>
+      <span>แชทกับแอดมิน</span>
+      <span id="chat-unread-count"
+        style="display: none; background: #fff; color: #e11d48; font-size: 0.72rem; padding: 2px 7px; border-radius: 99px; font-weight: 800; margin-left: 2px;">0</span>
+    </button>
+
+    <!-- ========================================================================
+       MODAL: CUSTOMER LIVE ORDER CHAT (Customer <-> Admin Real-Time)
+       ======================================================================== -->
+    <div id="modal-order-chat" class="chat-widget-window">
+      <!-- Chat Header -->
+      <div class="chat-widget-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="position: relative;">
+            <div
+              style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #e11d48 0%, #fb7185 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.05rem; box-shadow: 0 4px 10px rgba(225, 29, 72, 0.4);">
+              <i class="fas fa-headset"></i>
+            </div>
+            <span
+              style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; background: #10b981; border: 2px solid #0f1018; border-radius: 50%;"></span>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <b style="color: #fff; font-size: 0.92rem;">แอดมิน Little Cloud (Support)</b>
+              <span
+                style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; font-weight: 700;">ONLINE
+                24H</span>
+            </div>
+            <div
+              style="font-size: 0.74rem; color: #9496a8; display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+              <span>คุยกับคุณ: <b id="chat-header-user-display" style="color: #fb7185;">member</b> <span
+                  style="font-size: 0.62rem; background: rgba(244, 114, 182, 0.15); color: #f472b6; padding: 1px 5px; border-radius: 4px; font-weight: 700;">Member</span></span>
+              <span>•</span>
+              <span id="chat-order-ref-badge"
+                style="color: #38bdf8; font-family: monospace; font-weight: 600;">#General</span>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button type="button" class="modal-close-btn"
+            style="position: static; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #1c1d2d; color: #9496a8; cursor: pointer;"
+            onclick="window.chatManager && window.chatManager.closeChat()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Order Context Banner (Item Name, Status) -->
+      <div id="chat-order-context-banner"
+        style="background: #181926; border-bottom: 1px solid #282a3d; padding: 10px 14px; font-size: 0.82rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="color: #f472b6;"><i class="fas fa-box-open"></i></span>
+            <b style="color: #fff; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
+              id="chat-order-product-name">
+              สินค้าที่สั่งซื้อ
+            </b>
+          </div>
+          <span
+            style="font-size: 0.72rem; color: #10b981; background: rgba(16,185,129,0.12); padding: 3px 8px; border-radius: 4px; font-weight: 600;">ชำระแล้ว</span>
+        </div>
+      </div>
+
+      <!-- Quick Action Suggestions (Pills) -->
+      <div
+        style="background: #141522; border-bottom: 1px solid #232537; padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;">
+        <button type="button" class="chat-quick-pill-item"
+          onclick="if(window.chatManager) window.chatManager.sendQuickMessage('สวัสดีครับแอดมิน สะดวกส่งของในเกม FiveM ไหมครับ')">
+          🚗 นัดรับของในเกม
+        </button>
+        <button type="button" class="chat-quick-pill-item"
+          onclick="if(window.chatManager) window.chatManager.sendQuickMessage('แจ้งปัญหาการใช้งาน / ขอความช่วยเหลือ')">
+          ⚠️ แจ้งปัญหา
+        </button>
+      </div>
+
+      <!-- Message Stream -->
+      <div id="chat-messages-container"
+        style="flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column;">
+        <div style="text-align: center; color: #64748b; font-size: 0.85rem; margin: auto;">
+          กำลังเชื่อมต่อห้องสนทนากับแอดมิน...
+        </div>
+      </div>
+
+      <!-- Attachment Preview Area -->
+      <div id="chat-attachment-preview-wrap"
+        style="display: none; padding: 8px 14px; background: #161726; border-top: 1px solid #232537; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img id="chat-attachment-preview-img" src=""
+            style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid #e11d48;">
+          <span style="font-size: 0.78rem; color: #cbd5e1;">แนบรูปภาพแล้ว</span>
+        </div>
+        <button type="button" class="modal-close-btn" style="position: static; font-size: 0.85rem; color: #ef4444;"
+          onclick="window.chatManager && window.chatManager.clearAttachment()">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+
+      <!-- Input Bar -->
+      <div style="padding: 10px 14px; background: #0f1018; border-top: 1px solid #232535;">
+        <form onsubmit="event.preventDefault(); window.chatManager && window.chatManager.sendMessage();"
+          style="display: flex; align-items: center; gap: 8px;">
+          <!-- Upload file button -->
+          <label for="chat-file-input"
+            style="cursor: pointer; color: #9496a8; padding: 8px; border-radius: 8px; transition: all 0.2s;"
+            title="แนบรูปภาพสลิปหรือภาพในเกม" onmouseover="this.style.color='#f472b6'"
+            onmouseout="this.style.color='#9496a8'">
+            <i class="fas fa-paperclip" style="font-size: 1.1rem;"></i>
+          </label>
+          <input type="file" id="chat-file-input" accept="image/*" style="display: none;"
+            onchange="window.chatManager && window.chatManager.handleAttachmentSelected(this)">
+
+          <!-- Message input -->
+          <input type="text" id="chat-message-input" placeholder="พิมพ์ข้อความคุยกับแอดมินที่นี่..." autocomplete="off"
+            style="flex: 1; background: #181926; border: 1px solid #2b2d42; border-radius: 20px; padding: 10px 16px; color: #fff; font-size: 0.88rem; outline: none;">
+
+          <!-- Send Button -->
+          <button type="submit" class="btn-pink"
+            style="width: 40px; height: 40px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i class="fas fa-paper-plane" style="font-size: 0.95rem; margin-left: -2px;"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="js/qrcode.min.js"></script>
+    <script src="js/auth.js?v=8.0"></script>
+    <script src="js/wallet.js?v=5.0"></script>
+    <script src="js/payment-gateway.js?v=7.0"></script>
+    <script src="js/shop.js?v=15.0"></script>
+    <script src="js/admin.js?v=9.0"></script>
+    <script src="js/chat.js?v=3.0"></script>
+    <script src="js/topup.js?v=13.0"></script>
+    <script src="js/reviews.js?v=5.0"></script>
+    <script src="js/orders.js?v=6.0"></script>
+    <script src="js/main.js?v=5.0"></script>
+
+</body>
+
+</html>
